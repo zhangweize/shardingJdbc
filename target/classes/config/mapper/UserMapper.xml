@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.study.dangdang.sharding.jdbc.mapper.UserMapper" >
+  <resultMap id="resultMap" type="com.study.dangdang.sharding.jdbc.entity.User" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="company_id" property="companyId" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="age" property="age" jdbcType="INTEGER" />
+  </resultMap>
+  
+  <insert id="insert">
+    insert into t_user (id,company_id,name,age) values (#{id},#{companyId},#{name},#{age})
+  </insert>
+  
+  <select id="findAll" resultMap="resultMap">
+   select <include refid="columnsName"/> from t_user where company_id in (
+     <foreach collection="list" item="item" separator=",">
+        #{item}
+     </foreach>
+     ) order by id
+  </select>
+  
+  <select id="findByUserIds" resultMap="resultMap">
+    select <include refid="columnsName"/> from t_user where company_id in (
+     <foreach collection="list" item="item" separator=",">
+        #{item}
+     </foreach>
+    )
+    
+  </select>
+  
+  <select id="countUser" resultType="java.lang.Integer">
+  	select count(*) as count from t_user where company_id in (
+     <foreach collection="list" item="item" separator=",">
+        #{item}
+     </foreach>
+     )
+  </select>
+  
+  <sql id="columnsName">
+     id,company_id,name,age
+  </sql>
+  
+   
+  
+</mapper>
